@@ -1,0 +1,7 @@
+
+This project is contain some open source utilities that will be shared b/w
+QEMU (www.qemu.org) and Mentor Graphics (www.mentor.com) products.
+
+The programming language is C (C99, compatible with QEMU).
+
+The license is free with copyright of Mentor Graphics.
