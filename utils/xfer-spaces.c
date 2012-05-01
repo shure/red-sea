@@ -278,7 +278,7 @@ int xfer_spaces_read_write(int is_read, const char* space_name, unsigned offset,
   if (!space->map)
     space_create_map(space);
 
-  if (offset + length >= space->map_size)
+  if (offset + length > space->map_size)
     return 0;
 
   record = space->map[offset];
