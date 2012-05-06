@@ -84,6 +84,7 @@ void text_buffer_append(TextBuffer* obj, const char* string)
   make_room(obj, string_length + 1);
   strncpy(obj->ptr, string, string_length);
   obj->ptr += string_length;
+  *obj->ptr = 0;
 }
 
 unsigned long text_buffer_size(TextBuffer* obj)
