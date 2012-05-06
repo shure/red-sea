@@ -85,3 +85,8 @@ void text_buffer_append(TextBuffer* obj, const char* string)
   strncpy(obj->ptr, string, string_length);
   obj->ptr += string_length;
 }
+
+unsigned long text_buffer_size(TextBuffer* obj)
+{
+  return obj->ptr - obj->begin;
+}

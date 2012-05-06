@@ -50,3 +50,6 @@ void text_buffer_printf(TextBuffer* obj, const char* format, ...);
 
 /* Append to the buffer by a specified string. */
 void text_buffer_append(TextBuffer* obj, const char* string);
+
+/* Return size of text in the text buffer. */
+unsigned long text_buffer_size(TextBuffer* obj);
