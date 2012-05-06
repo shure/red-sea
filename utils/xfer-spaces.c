@@ -236,7 +236,7 @@ static void xml_dump_node(XferTreeNode* node, unsigned indent)
 const char* xfer_spaces_get_xml()
 {
   XferSpace* ptr;
-  int need_dump = 0;;
+  int need_dump = 0;
 
   if (!xml.begin) {
     text_buffer_init(&xml, 4*1024);
@@ -251,6 +251,10 @@ const char* xfer_spaces_get_xml()
       space_create_tree(ptr);
       need_dump = 1;
     }
+  }
+
+  if (text_buffer_size(&xml) == 0) {
+    need_dump = 1;
   }
 
   if (need_dump) {
