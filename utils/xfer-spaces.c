@@ -218,6 +218,10 @@ static void xml_dump_node(XferTreeNode* node, unsigned indent)
     xml_print_indent(indent);
     if (ptr->record) {
       unsigned data_size = ptr->record->object->get_size(ptr->record->opaque);
+      if (data_size > 8) {
+        /* Only uint64 objects are supported. TODO: Partial view. */
+        continue;
+      }
       text_buffer_printf(&xml, "<reg name=\"%s\" offset=\"%d\" bitsize=\"%d\"/>\n",
                          ptr->name, ptr->record->offset, data_size * 8);
     } else {
