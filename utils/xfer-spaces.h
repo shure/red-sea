@@ -62,6 +62,14 @@ extern int xfer_spaces_read_write(int is_read, const char* space_name,
                                   unsigned offset, unsigned char* data,
                                   unsigned length);
 
+extern void*  xfer_spaces_get_object(const char* space_name, const char* hier_name);
+
+extern void*  xfer_spaces_get_object_no_space(const char* hier_name);
+
+extern void** xfer_spaces_get_all_objects(const char* space_name, int* length);
+
+extern void** xfer_spaces_get_all_objects_no_space(int* length);
+
 #ifdef __cplusplus
 }
 #endif

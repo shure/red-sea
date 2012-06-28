@@ -134,6 +134,74 @@ void xfer_spaces_declare_object(const char* space_name, XferObject* debuggable, 
   space->list = ptr;
 }
 
+
+void* xfer_spaces_get_object(const char* space_name, const char* hier_name)
+{
+   XferSpace* space_ptr = get_space(space_name);
+
+   if (!space_ptr) return 0;
+
+   XferRecord *record;
+   for (record = space_ptr->list; record; record = record->next) {
+      if (!strcmp(record->object->get_name(record->opaque), hier_name)) return record->opaque;
+   }
+
+   return 0;
+}
+
+void* xfer_spaces_get_object_no_space(const char* hier_name)
+{
+	XferSpace* ptr;
+	XferObject* result;
+	for (ptr = xfer_spaces; ptr; ptr = ptr->next) {
+		result = xfer_spaces_get_object(ptr->name, hier_name);
+		if (result) return result;
+	}
+
+	return 0;
+}
+
+void** xfer_spaces_get_all_objects(const char* space_name, int* length)
+{
+	XferSpace* space_ptr = get_space(space_name);
+
+	(*length) = 0;
+	if (!space_ptr) return 0;
+
+	XferRecord *record = 0;
+	void** result = malloc(sizeof(void*) * 1024);
+	for (record = space_ptr->list; record; record = record->next) {
+		result[(*length)++] = record->opaque;
+	}
+
+	return result;
+}
+
+void** xfer_spaces_get_all_objects_no_space(int* length)
+{
+	(*length) = 0;
+	void** result = 0;
+	XferSpace* ptr = 0;
+	for (ptr = xfer_spaces; ptr; ptr = ptr->next) {
+		int internal_length = 0;
+		void** internal_result = xfer_spaces_get_all_objects(ptr->name, &internal_length);
+		if (internal_length && internal_result) {
+			void** new_result = malloc(sizeof(void*) * ((*length) + internal_length));
+			memcpy(new_result, result, sizeof(void*) * (*length));
+			memcpy(new_result+(*length), internal_result, sizeof(void*) * internal_length);
+			if (result) {
+				free(result);
+			}
+			result = new_result;
+			(*length) = (*length) + internal_length;
+			free(internal_result);
+			internal_length = 0;
+		}
+	}
+
+	return result;
+}
+
 static XferTreeNode* find_sibling(XferTreeNode* node, const char* name)
 {
   XferTreeNode *ptr;
