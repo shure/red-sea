@@ -33,6 +33,11 @@
 
 #define NAME_SEPARATOR "."
 #define INITIAL_OFFSET 0x10
+#ifdef _WIN32
+#define STRTOK_R strtok_s
+#else
+#define STRTOK_R strtok_r
+#endif
 
 typedef struct XferRecord
 {
@@ -138,10 +143,10 @@ void xfer_spaces_declare_object(const char* space_name, XferObject* debuggable, 
 void* xfer_spaces_get_object(const char* space_name, const char* hier_name)
 {
    XferSpace* space_ptr = get_space(space_name);
+   XferRecord *record;
 
    if (!space_ptr) return 0;
 
-   XferRecord *record;
    for (record = space_ptr->list; record; record = record->next) {
       if (!strcmp(record->object->get_name(record->opaque), hier_name)) return record->opaque;
    }
@@ -164,12 +169,12 @@ void* xfer_spaces_get_object_no_space(const char* hier_name)
 void** xfer_spaces_get_all_objects(const char* space_name, int* length)
 {
 	XferSpace* space_ptr = get_space(space_name);
-
+	XferRecord *record = 0;
+        void **result;
 	(*length) = 0;
 	if (!space_ptr) return 0;
 
-	XferRecord *record = 0;
-	void** result = malloc(sizeof(void*) * 1024);
+	result = malloc(sizeof(void*) * 1024);
 	for (record = space_ptr->list; record; record = record->next) {
 		result[(*length)++] = record->opaque;
 	}
@@ -179,9 +184,10 @@ void** xfer_spaces_get_all_objects(const char* space_name, int* length)
 
 void** xfer_spaces_get_all_objects_no_space(int* length)
 {
-	(*length) = 0;
 	void** result = 0;
 	XferSpace* ptr = 0;
+	(*length) = 0;
+
 	for (ptr = xfer_spaces; ptr; ptr = ptr->next) {
 		int internal_length = 0;
 		void** internal_result = xfer_spaces_get_all_objects(ptr->name, &internal_length);
@@ -218,7 +224,7 @@ static void merge_record(XferTreeNode* ptr, XferRecord* record)
   char *saveptr = 0, *token;
   char* path = strdup(record->object->get_name(record->opaque));
 
-  token = strtok_r(path, NAME_SEPARATOR, &saveptr);
+  token = STRTOK_R(path, NAME_SEPARATOR, &saveptr);
   while (token) {
     XferTreeNode *sibling = find_sibling(ptr->child, token);
     if (!sibling) {
@@ -229,7 +235,7 @@ static void merge_record(XferTreeNode* ptr, XferRecord* record)
       ptr = sibling;
     }
     ptr = sibling;
-    token = strtok_r(0, NAME_SEPARATOR, &saveptr);
+    token = STRTOK_R(0, NAME_SEPARATOR, &saveptr);
   }
 
   free(path);
